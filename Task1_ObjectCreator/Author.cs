@@ -2,20 +2,24 @@
 {
     public class Author
     {
-        public Author(string name, string surname, int age)
+        public Author(string name, string surname, DateTime birthDate)
         {
             Name = name;
             Surname = surname;
-            Age = age;
+            BirthDate = birthDate;
+        }
+        public Author()
+        {
+
         }
 
         public string Name { get; set; }
         public string Surname { get; set; }
 
-        public int Age {get; set;}
+        public int Age => DateTime.Now.Year - BirthDate.Year;
 
         // Part 4
-        // public DateTime BirthDate { get; set; }
+         public DateTime BirthDate { get; set; }
 
         public override string? ToString()
         {
