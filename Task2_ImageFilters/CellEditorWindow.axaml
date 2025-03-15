@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Task2_ImageFilters.CellEditorWindow"
+        Title="Edit Cells"
+        Width="400" Height="400">
+	<Grid>
+		<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+			<UniformGrid x:Name="CellGrid" Rows="1" Columns="1" />
+		</ScrollViewer>
+		<StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Margin="10">
+			<Button Content="Apply" Click="ApplyButton_Click" />
+			<Button Content="Cancel" Click="CancelButton_Click" />
+		</StackPanel>
+	</Grid>
+</Window>

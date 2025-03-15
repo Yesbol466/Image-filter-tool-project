@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Task2_ImageFilters.ConvolutionFilterEditorWindow"
+        Title="Convolution Filter Editor"
+        Width="400" Height="600">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<StackPanel Orientation="Vertical" Grid.Row="0" Margin="10">
+			<TextBlock Text="Number of Rows" />
+			<TextBox x:Name="RowsTextBox" Text="3" />
+			<TextBlock Text="Number of Columns" />
+			<TextBox x:Name="ColumnsTextBox" Text="3" />
+			<Button Content="OK" Click="OkButton_Click" Margin="10,5,10,0" />
+			<Button Content="Edit Cells" Click="EditCellsButton_Click" Margin="10,5,10,0" />
+		</StackPanel>
+		<DataGrid x:Name="KernelDataGrid" Grid.Row="2" AutoGenerateColumns="False" HeadersVisibility="Column" />
+		<StackPanel Orientation="Vertical" Grid.Row="3" Margin="10">
+			<TextBlock Text="Divisor" />
+			<TextBox x:Name="DivisorTextBox" />
+			<CheckBox x:Name="AutoComputeDivisorCheckBox" Content="Auto Compute Divisor" />
+			<TextBlock Text="Offset" />
+			<TextBox x:Name="OffsetTextBox" />
+			<TextBlock Text="Anchor Point" />
+			<ComboBox x:Name="AnchorPointComboBox">
+				<ComboBoxItem Content="Center" />
+				<ComboBoxItem Content="Top-Left" />
+				<ComboBoxItem Content="Top-Right" />
+				<ComboBoxItem Content="Bottom-Left" />
+				<ComboBoxItem Content="Bottom-Right" />
+			</ComboBox>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+				<Button Content="Load Filter" Click="LoadFilterButton_Click" />
+				<Button Content="Save Filter" Click="SaveFilterButton_Click" />
+				<Button Content="Apply Filter" Click="ApplyFilterButton_Click" />
+				<Button Content="Apply Loaded Filter" Click="ApplyLoadedFilterButton_Click" />
+			</StackPanel>
+		</StackPanel>
+	</Grid>
+</Window>
+

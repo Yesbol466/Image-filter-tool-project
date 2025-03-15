@@ -2,10 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:controls="clr-namespace:Task2_ImageFilters.CustomControls"
+        xmlns:controls="clr-namespace:Task2_ImageFilters.CustomControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Task2_ImageFilters.ImageFilterViewerWindow"
-		Title="ImageFilterViewer" RequestedThemeVariant="Light">
+        Title="ImageFilterViewer" RequestedThemeVariant="Light">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition />
@@ -17,12 +17,25 @@
 		</Grid.RowDefinitions>
 		<Image Grid.RowSpan="3" Name="InputImage" Stretch="Uniform"/>
 
-		<Button Grid.Column="1" Grid.Row="0" Margin="10" Content="Reset image" Click="ResetImageButton_Click" />
 		<controls:GroupBox Grid.Column="1" Grid.Row="1" Header="Available Filters" BorderThickness="3" BorderBrush="AliceBlue" HeaderForeground="Black" HeaderBackground="White" Margin="10" HeaderMargin="10,0">
 			<StackPanel>
+				<Button Grid.Column="1" Grid.Row="0" Margin="10" Content="Load Image" Click="LoadImageButton_Click" />
+				<Button Grid.Column="1" Grid.Row="0" Margin="10" Content="Reset image" Click="ResetImageButton_Click" />
 				<Button Content="Apply Gaussian Blur Filter" Click="ApplyGaussianBlurFilterButton_Click"/>
 				<Button Content="Apply Laplace Filter" Click="ApplyLaplaceFilterButton_Click" />
 				<Button Content="Apply Emboss Filter" Click="ApplyEmbossFilterButton_Click"/>
+				<Button Content="Apply Inversion Filter" Click="ApplyInversionFilterButton_Click"/>
+				<Button Content="Apply Brightness Correction Filter" Click="ApplyBrightnessCorrectionFilterButton_Click"/>
+				<Button Content="Apply Contrast Enhancement Filter" Click="ApplyContrastEnhancementFilterButton_Click"/>
+				<Button Content="Apply Gamma Correction Filter" Click="ApplyGammaCorrectionFilterButton_Click"/>
+				<Button Content="Apply Blur Filter" Click="ApplyBlurFilterButton_Click"/>
+				<Button Content="Apply Sharpen Filter" Click="ApplySharpenFilterButton_Click"/>
+				<Button Content="Apply Edge Detection Filter" Click="ApplyEdgeDetectionFilterButton_Click"/>
+				<StackPanel Orientation="Horizontal">
+					<TextBox x:Name="MedianFilterSizeTextBox" Width="50" Text="3" Margin="0,0,10,0"/>
+					<Button Content="Apply Median Filter" Click="ApplyMedianFilterButton_Click"/>
+				</StackPanel>
+				<Button Content="Edit Convolution Filter" Click="EditConvolutionFilterButton_Click"/>
 			</StackPanel>
 		</controls:GroupBox>
 	</Grid>

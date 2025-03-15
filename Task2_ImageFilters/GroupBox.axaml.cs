@@ -7,7 +7,7 @@ using System;
 
 namespace Task2_ImageFilters.CustomControls;
 
-public partial class GroupBox: UserControl, IStyleable
+public partial class GroupBox : UserControl
 {
     /// <summary>
     /// Defines the <see cref="Header"/> property.
@@ -16,8 +16,8 @@ public partial class GroupBox: UserControl, IStyleable
         AvaloniaProperty.RegisterDirect<GroupBox, string>(
             nameof(Header),
             o => o.Header,
-            (o, v) => o.Header = o.HeaderUpperCase ? v?.ToUpperInvariant() : v );
-        
+            (o, v) => o.Header = o.HeaderUpperCase ? v?.ToUpperInvariant() : v);
+
     /// <summary>
     /// Defines the <see cref="HeaderBackground"/> property.
     /// </summary>
@@ -89,7 +89,7 @@ public partial class GroupBox: UserControl, IStyleable
         set { SetAndRaise(HeaderProperty, ref _header, value); }
     }
 
-    Type IStyleable.StyleKey => typeof(GroupBox);
+    protected override Type StyleKeyOverride => typeof(GroupBox);
 
     public GroupBox()
     {

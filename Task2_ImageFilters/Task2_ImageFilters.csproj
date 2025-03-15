@@ -33,4 +33,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Task2_Filters.Common\Task2_Filters.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CellEditorWindow.axaml.cs">
+      <DependentUpon>CellEditorWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="ConvolutionFilterEditorWindow.axaml.cs">
+      <DependentUpon>ConvolutionFilterEditorWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
