@@ -144,7 +144,36 @@ public partial class ImageFilterViewerWindow : Window, INotifyPropertyChanged
         }
         else
         {
-            return;
+            Console.WriteLine("Invalid input");
+        }
+    }
+
+    private void ApplyAverageDitheringButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var textBox = this.FindControl<TextBox>("DitheringShadesTextBox");
+        if (textBox != null && int.TryParse(textBox.Text, out int shades) && shades > 1)
+        {
+            PixelColor[,] inputArray = BitmapConverters.BitmapTo2DArray(_bitmap);
+            ApplyFilter(FiltersLibrary.ApplyAverageDithering(inputArray, shades));
+        }
+        else
+        {
+            Console.WriteLine("Invalid input");
+
+        }
+    }
+
+    private void ApplyKMeansQuantizationButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var textBox = this.FindControl<TextBox>("KMeansClustersTextBox");
+        if (textBox != null && int.TryParse(textBox.Text, out int k) && k > 1)
+        {
+            PixelColor[,] inputArray = BitmapConverters.BitmapTo2DArray(_bitmap);
+            ApplyFilter(FiltersLibrary.ApplyKMeansQuantization(inputArray, k));
+        }
+        else
+        {
+            Console.WriteLine("Invalid input");
         }
     }
 }

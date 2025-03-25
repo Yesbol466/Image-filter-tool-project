@@ -36,6 +36,14 @@
 					<Button Content="Apply Median Filter" Click="ApplyMedianFilterButton_Click"/>
 				</StackPanel>
 				<Button Content="Edit Convolution Filter" Click="EditConvolutionFilterButton_Click"/>
+				<StackPanel Orientation="Horizontal">
+					<TextBox x:Name="DitheringShadesTextBox" Width="50" Text="4" Margin="0,0,10,0"/>
+					<Button Content="Apply Average Dithering" Click="ApplyAverageDitheringButton_Click"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBox x:Name="KMeansClustersTextBox" Width="50" Text="4" Margin="0,0,10,0"/>
+					<Button Content="Apply K-Means Quantization" Click="ApplyKMeansQuantizationButton_Click"/>
+				</StackPanel>
 			</StackPanel>
 		</controls:GroupBox>
 	</Grid>

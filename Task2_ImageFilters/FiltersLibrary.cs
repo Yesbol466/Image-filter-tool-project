@@ -247,4 +247,114 @@ public static class FiltersLibrary
 
         return result;
     }
+    public static PixelColor[,] ApplyAverageDithering(PixelColor[,] array, int shades)
+    {
+        int width = array.GetLength(0);
+        int height = array.GetLength(1);
+        var result = new PixelColor[width, height];
+
+        int step = 255 / (shades - 1);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pixel = array[x, y];
+                int gray = (pixel.R + pixel.G + pixel.B) / 3;
+                int newGray = (gray / step) * step;
+                result[x, y] = new PixelColor(newGray, newGray, newGray);
+            }
+        }
+
+        return result;
+    }
+    public static PixelColor[,] ApplyKMeansQuantization(PixelColor[,] array, int k)
+    {
+        int width = array.GetLength(0);
+        int height = array.GetLength(1);
+        var result = new PixelColor[width, height];
+
+        var pixels = new List<PixelColor>();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                pixels.Add(array[x, y]);
+            }
+        }
+
+        var random = new Random();
+        var centroids = pixels.OrderBy(p => random.Next()).Take(k).ToList();
+
+        bool changed;
+        var clusters = new List<List<PixelColor>>();
+
+        do
+        {
+            clusters.Clear();
+            for (int i = 0; i < k; i++)
+            {
+                clusters.Add(new List<PixelColor>());
+            }
+            foreach (var pixel in pixels)
+            {
+                int nearest = 0;
+                double minDistance = double.MaxValue;
+                for (int i = 0; i < k; i++)
+                {
+                    double distance = GetDistance(pixel, centroids[i]);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearest = i;
+                    }
+                }
+                clusters[nearest].Add(pixel);
+            }
+            changed = false;
+            for (int i = 0; i < k; i++)
+            {
+                if (clusters[i].Count == 0) continue;
+
+                int r = (int)clusters[i].Average(p => p.R);
+                int g = (int)clusters[i].Average(p => p.G);
+                int b = (int)clusters[i].Average(p => p.B);
+                var newCentroid = new PixelColor(r, g, b);
+
+                if (!newCentroid.Equals(centroids[i]))
+                {
+                    centroids[i] = newCentroid;
+                    changed = true;
+                }
+            }
+        } while (changed);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pixel = array[x, y];
+                int nearest = 0;
+                double minDistance = double.MaxValue;
+                for (int i = 0; i < k; i++)
+                {
+                    double distance = GetDistance(pixel, centroids[i]);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearest = i;
+                    }
+                }
+                result[x, y] = centroids[nearest];
+            }
+        }
+
+        return result;
+    }
+
+    private static double GetDistance(PixelColor a, PixelColor b)
+    {
+        return Math.Sqrt(Math.Pow(a.R - b.R, 2) + Math.Pow(a.G - b.G, 2) + Math.Pow(a.B - b.B, 2));
+    }
+
+
 }
