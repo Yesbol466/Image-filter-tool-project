@@ -8,43 +8,72 @@
         Title="ImageFilterViewer" RequestedThemeVariant="Light">
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition />
-			<ColumnDefinition Width="240"/>
+			<ColumnDefinition Width="3*" />
+			<ColumnDefinition Width="1*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="60"/>
 			<RowDefinition/>
 		</Grid.RowDefinitions>
-		<Image Grid.RowSpan="3" Name="InputImage" Stretch="Uniform"/>
 
-		<controls:GroupBox Grid.Column="1" Grid.Row="1" Header="Available Filters" BorderThickness="3" BorderBrush="AliceBlue" HeaderForeground="Black" HeaderBackground="White" Margin="10" HeaderMargin="10,0">
-			<StackPanel>
-				<Button Grid.Column="1" Grid.Row="0" Margin="10" Content="Load Image" Click="LoadImageButton_Click" />
-				<Button Grid.Column="1" Grid.Row="0" Margin="10" Content="Reset image" Click="ResetImageButton_Click" />
-				<Button Content="Apply Gaussian Blur Filter" Click="ApplyGaussianBlurFilterButton_Click"/>
-				<Button Content="Apply Laplace Filter" Click="ApplyLaplaceFilterButton_Click" />
-				<Button Content="Apply Emboss Filter" Click="ApplyEmbossFilterButton_Click"/>
-				<Button Content="Apply Inversion Filter" Click="ApplyInversionFilterButton_Click"/>
-				<Button Content="Apply Brightness Correction Filter" Click="ApplyBrightnessCorrectionFilterButton_Click"/>
-				<Button Content="Apply Contrast Enhancement Filter" Click="ApplyContrastEnhancementFilterButton_Click"/>
-				<Button Content="Apply Gamma Correction Filter" Click="ApplyGammaCorrectionFilterButton_Click"/>
-				<Button Content="Apply Blur Filter" Click="ApplyBlurFilterButton_Click"/>
-				<Button Content="Apply Sharpen Filter" Click="ApplySharpenFilterButton_Click"/>
-				<Button Content="Apply Edge Detection Filter" Click="ApplyEdgeDetectionFilterButton_Click"/>
-				<StackPanel Orientation="Horizontal">
-					<TextBox x:Name="MedianFilterSizeTextBox" Width="50" Text="3" Margin="0,0,10,0"/>
-					<Button Content="Apply Median Filter" Click="ApplyMedianFilterButton_Click"/>
+		<TabControl Grid.RowSpan="2" Grid.Column="0">
+			<TabItem Header="Original Image">
+				<Image Name="InputImage" Stretch="Uniform"/>
+			</TabItem>
+			<TabItem Header="HSV and Reconstructed RGB">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<Image Grid.Row="0" Grid.Column="0" Name="HueImage" Stretch="Uniform"/>
+					<Image Grid.Row="1" Grid.Column="0" Name="SaturationImage" Stretch="Uniform"/>
+					<Image Grid.Row="2" Grid.Column="0" Name="ValueImage" Stretch="Uniform"/>
+					<Image Grid.Row="3" Grid.Column="0" Name="ReconstructedImage" Stretch="Uniform"/>
+				</Grid>
+			</TabItem>
+		</TabControl>
+
+		<controls:GroupBox Grid.Column="1" Grid.Row="1" Header="Available Filters" BorderThickness="3" BorderBrush="AliceBlue" HeaderForeground="Black" HeaderBackground="White" Margin="5" HeaderMargin="5,0">
+			<ScrollViewer>
+				<StackPanel Spacing="5">
+					<Button Content="Load Image" Click="LoadImageButton_Click" />
+					<Button Content="Reset image" Click="ResetImageButton_Click" />
+					<Button Content="Convert to Grayscale" Click="ConvertToGrayscaleButton_Click"/>
+					<Button Content="Save Image" Click="SaveImageButton_Click"/>
+					<Button Content="Apply Gaussian Blur Filter" Click="ApplyGaussianBlurFilterButton_Click"/>
+					<Button Content="Apply Laplace Filter" Click="ApplyLaplaceFilterButton_Click" />
+					<Button Content="Apply Emboss Filter" Click="ApplyEmbossFilterButton_Click"/>
+					<Button Content="Apply Inversion Filter" Click="ApplyInversionFilterButton_Click"/>
+					<Button Content="Apply Brightness Correction Filter" Click="ApplyBrightnessCorrectionFilterButton_Click"/>
+					<Button Content="Apply Contrast Enhancement Filter" Click="ApplyContrastEnhancementFilterButton_Click"/>
+					<Button Content="Apply Gamma Correction Filter" Click="ApplyGammaCorrectionFilterButton_Click"/>
+					<Button Content="Apply Blur Filter" Click="ApplyBlurFilterButton_Click"/>
+					<Button Content="Apply Sharpen Filter" Click="ApplySharpenFilterButton_Click"/>
+					<Button Content="Apply Edge Detection Filter" Click="ApplyEdgeDetectionFilterButton_Click"/>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<TextBox x:Name="MedianFilterSizeTextBox" Width="50" Text="3"/>
+						<Button Content="Apply Median Filter" Click="ApplyMedianFilterButton_Click"/>
+					</StackPanel>
+					<Button Content="Edit Convolution Filter" Click="EditConvolutionFilterButton_Click"/>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<TextBox x:Name="DitheringShadesTextBox" Width="50" Text="4"/>
+						<Button Content="Apply Average Dithering" Click="ApplyAverageDitheringButton_Click"/>
+					</StackPanel>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<TextBox x:Name="KMeansClustersTextBox" Width="50" Text="4"/>
+						<Button Content="Apply K-Means Quantization" Click="ApplyKMeansQuantizationButton_Click"/>
+					</StackPanel>
+					<Button Content="Convert to HSV" Click="ConvertToHSVButton_Click"/>
+					<Button Content="Convert to RGB" Click="ConvertToRGBButton_Click"/>
 				</StackPanel>
-				<Button Content="Edit Convolution Filter" Click="EditConvolutionFilterButton_Click"/>
-				<StackPanel Orientation="Horizontal">
-					<TextBox x:Name="DitheringShadesTextBox" Width="50" Text="4" Margin="0,0,10,0"/>
-					<Button Content="Apply Average Dithering" Click="ApplyAverageDitheringButton_Click"/>
-				</StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBox x:Name="KMeansClustersTextBox" Width="50" Text="4" Margin="0,0,10,0"/>
-					<Button Content="Apply K-Means Quantization" Click="ApplyKMeansQuantizationButton_Click"/>
-				</StackPanel>
-			</StackPanel>
+			</ScrollViewer>
 		</controls:GroupBox>
 	</Grid>
 </Window>

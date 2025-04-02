@@ -13,7 +13,8 @@ namespace Task2_ImageFilters;
 public partial class ImageFilterViewerWindow : Window, INotifyPropertyChanged
 {
     public WriteableBitmap _bitmap = null!;
-    private WriteableBitmap _originalBitmap = null!; // Field to store the original loaded image
+    private WriteableBitmap _originalBitmap = null!; 
+    private (double[,], double[,], double[,]) _hsvData;
 
     public ImageFilterViewerWindow()
     {
@@ -46,6 +47,11 @@ public partial class ImageFilterViewerWindow : Window, INotifyPropertyChanged
     {
         _bitmap = _originalBitmap;
         InputImage.Source = _bitmap;
+        HueImage.Source = null;
+        SaturationImage.Source = null;
+        ValueImage.Source = null;
+        ReconstructedImage.Source = null;
+
     }
 
     private async void LoadImageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -159,7 +165,6 @@ public partial class ImageFilterViewerWindow : Window, INotifyPropertyChanged
         else
         {
             Console.WriteLine("Invalid input");
-
         }
     }
 
@@ -176,4 +181,63 @@ public partial class ImageFilterViewerWindow : Window, INotifyPropertyChanged
             Console.WriteLine("Invalid input");
         }
     }
+
+    private void ConvertToGrayscaleButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        PixelColor[,] inputArray = BitmapConverters.BitmapTo2DArray(_bitmap);
+        ApplyFilter(FiltersLibrary.ConvertToGrayscale(inputArray));
+    }
+
+    private async void SaveImageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var saveFileDialog = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("Image Files") { Patterns = new[] { "*.png", "*.jpg", "*.jpeg", "*.bmp" } }
+            }
+        });
+        if (saveFileDialog != null)
+        {
+            var stream = await saveFileDialog.OpenWriteAsync();
+            _bitmap.Save(stream);
+        }
+    }
+
+    private void ConvertToHSVButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        PixelColor[,] inputArray = BitmapConverters.BitmapTo2DArray(_bitmap);
+        _hsvData = FiltersLibrary.ConvertToHSV(inputArray);
+
+        HueImage.Source = BitmapConverters.ArrayToBitmap(ConvertToPixelColorArray(_hsvData.Item1));
+        SaturationImage.Source = BitmapConverters.ArrayToBitmap(ConvertToPixelColorArray(_hsvData.Item2));
+        ValueImage.Source = BitmapConverters.ArrayToBitmap(ConvertToPixelColorArray(_hsvData.Item3));
+    }
+
+    private void ConvertToRGBButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_hsvData.Item1 != null && _hsvData.Item2 != null && _hsvData.Item3 != null)
+        {
+            PixelColor[,] rgbArray = FiltersLibrary.ConvertToRGB(_hsvData.Item1, _hsvData.Item2, _hsvData.Item3);
+            ReconstructedImage.Source = BitmapConverters.ArrayToBitmap(rgbArray);
+        }
+    }
+    private PixelColor[,] ConvertToPixelColorArray(double[,] array)
+    {
+        int width = array.GetLength(0);
+        int height = array.GetLength(1);
+        var result = new PixelColor[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int value = (int)(array[x, y] * 255);
+                result[x, y] = new PixelColor(value, value, value);
+            }
+        }
+
+        return result;
+    }
+
 }

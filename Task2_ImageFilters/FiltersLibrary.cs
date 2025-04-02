@@ -203,8 +203,6 @@ public static class FiltersLibrary
         return result;
     }
 
-
-
     private static PixelColor[,] ApplyConvolutionFilter(PixelColor[,] array, double[,] kernel)
     {
         int width = array.GetLength(0);
@@ -247,12 +245,24 @@ public static class FiltersLibrary
 
         return result;
     }
+
     public static PixelColor[,] ApplyAverageDithering(PixelColor[,] array, int shades)
     {
         int width = array.GetLength(0);
         int height = array.GetLength(1);
         var result = new PixelColor[width, height];
 
+        int totalGray = 0;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pixel = array[x, y];
+                int gray = (pixel.R + pixel.G + pixel.B) / 3;
+                totalGray += gray;
+            }
+        }
+        int averageGray = totalGray / (width * height);
         int step = 255 / (shades - 1);
 
         for (int x = 0; x < width; x++)
@@ -261,13 +271,16 @@ public static class FiltersLibrary
             {
                 var pixel = array[x, y];
                 int gray = (pixel.R + pixel.G + pixel.B) / 3;
-                int newGray = (gray / step) * step;
+                int newGray = (gray > averageGray) ? ((gray / step) * step) : 0;
+                // why (gray/step) * step instead of just gray because I used it to quantize the gray value to the nearest step,
+                // its used for reducing the number of shades, to make sure the gray value is mapped to one of these levels that defined by number of shades
                 result[x, y] = new PixelColor(newGray, newGray, newGray);
             }
         }
 
         return result;
     }
+
     public static PixelColor[,] ApplyKMeansQuantization(PixelColor[,] array, int k)
     {
         int width = array.GetLength(0);
@@ -288,14 +301,17 @@ public static class FiltersLibrary
 
         bool changed;
         var clusters = new List<List<PixelColor>>();
+        int maxIterations = 100;
+        double epsilon = 0.01;
 
-        do
+        for (int iteration = 0; iteration < maxIterations; iteration++)
         {
             clusters.Clear();
             for (int i = 0; i < k; i++)
             {
                 clusters.Add(new List<PixelColor>());
             }
+
             foreach (var pixel in pixels)
             {
                 int nearest = 0;
@@ -311,6 +327,7 @@ public static class FiltersLibrary
                 }
                 clusters[nearest].Add(pixel);
             }
+
             changed = false;
             for (int i = 0; i < k; i++)
             {
@@ -321,13 +338,16 @@ public static class FiltersLibrary
                 int b = (int)clusters[i].Average(p => p.B);
                 var newCentroid = new PixelColor(r, g, b);
 
-                if (!newCentroid.Equals(centroids[i]))
+                if (GetDistance(newCentroid, centroids[i]) > epsilon)
                 {
                     centroids[i] = newCentroid;
                     changed = true;
                 }
             }
-        } while (changed);
+
+            if (!changed) break;
+        }
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -356,5 +376,125 @@ public static class FiltersLibrary
         return Math.Sqrt(Math.Pow(a.R - b.R, 2) + Math.Pow(a.G - b.G, 2) + Math.Pow(a.B - b.B, 2));
     }
 
+    public static PixelColor[,] ConvertToGrayscale(PixelColor[,] array)
+    {
+        int width = array.GetLength(0);
+        int height = array.GetLength(1);
+        var result = new PixelColor[width, height];
 
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pixel = array[x, y];
+                int gray = (pixel.R + pixel.G + pixel.B) / 3;
+                result[x, y] = new PixelColor(gray, gray, gray);
+            }
+        }
+
+        return result;
+    }
+
+    public static (double[,], double[,], double[,]) ConvertToHSV(PixelColor[,] array)
+    {
+        int width = array.GetLength(0);
+        int height = array.GetLength(1);
+        var h = new double[width, height];
+        var s = new double[width, height];
+        var v = new double[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pixel = array[x, y];
+                double r = pixel.R / 255.0;
+                double g = pixel.G / 255.0;
+                double b = pixel.B / 255.0;
+                double max = Math.Max(r, Math.Max(g, b));
+                double min = Math.Min(r, Math.Min(g, b));
+                double delta = max - min;
+                if (delta == 0)
+                {
+                    h[x, y] = 0;
+                }
+                else if (max == r)
+                {
+                    h[x, y] = 60 * (((g - b) / delta) );
+                }
+                else if (max == g)
+                {
+                    h[x, y] = 60 * (((b - r) / delta) + 2);
+                }
+                else
+                {
+                    h[x, y] = 60 * (((r - g) / delta) + 4);
+                }
+
+                if (h[x, y] < 0)
+                {
+                    h[x, y] += 360;
+                }
+                s[x, y] = (max == 0) ? 0 : delta / max;
+                v[x, y] = max;
+            }
+        }
+
+        return (h, s, v);
+    }
+
+
+
+    public static PixelColor[,] ConvertToRGB(double[,] h, double[,] s, double[,] v)
+    {
+        int width = h.GetLength(0);
+        int height = h.GetLength(1);
+        var result = new PixelColor[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                double hh = h[x, y];
+                double ss = s[x, y];
+                double vv = v[x, y];
+                double c = vv * ss;
+                double xVal = c * (1 - Math.Abs((hh / 60) % 2 - 1));
+                double m = vv - c;
+                double r, g, b;
+
+                if (hh >= 0 && hh < 60)
+                {
+                    r = c; g = xVal; b = 0;
+                }
+                else if (hh >= 60 && hh < 120)
+                {
+                    r = xVal; g = c; b = 0;
+                }
+                else if (hh >= 120 && hh < 180)
+                {
+                    r = 0; g = c; b = xVal;
+                }
+                else if (hh >= 180 && hh < 240)
+                {
+                    r = 0; g = xVal; b = c;
+                }
+                else if (hh >= 240 && hh < 300)
+                {
+                    r = xVal; g = 0; b = c;
+                }
+                else
+                {
+                    r = c; g = 0; b = xVal;
+                }
+                result[x, y] = new PixelColor(
+                    (int)((r + m) * 255),
+                    (int)((g + m) * 255),
+                    (int)((b + m) * 255)
+                );
+            }
+        }
+
+        return result;
+    }
 }
